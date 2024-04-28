@@ -1,2 +1,2 @@
-# FrostyMoutains
+# FrostyMountains
 SPA Application for Kubernetes
