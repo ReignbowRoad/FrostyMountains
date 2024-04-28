@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frosty-mountains
+  labels:
+    app: frosty-mountains
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frosty-mountains
+  template:
+    metadata:
+      labels:
+        app: frosty-mountains
+    spec:
+      containers:
+      - name: frosty-mountains
+        image: dpluser/frosty-mountains:1.0.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frosty-mountains
+  labels:
+    app: frosty-mountains
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: frosty-mountains
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frosty-mountains
+spec:
+  tls:
+  - hosts:
+      - frosty-mountains.example.com
+    secretName: frosty-mountains-tls
+  ingressClassName: nginx
+  rules:
+  - host: frosty-mountains.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frosty-mountains
+            port:
+              number: 80
